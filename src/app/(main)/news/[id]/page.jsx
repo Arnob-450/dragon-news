@@ -1,10 +1,67 @@
+import { getNewsDetailsById } from '@/lib/data';
+import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
+import { BsArrowRight } from 'react-icons/bs';
+import { CiBookmark, CiShare2 } from 'react-icons/ci';
+import { FaEye } from 'react-icons/fa';
+import { IoStar } from 'react-icons/io5';
 
-const NewsDetailsPage = () => {
+export const generateMetadata = async ({ params }) =>{
+    const res = await params;
+    const news = await getNewsDetailsById(res.id);
+    return {
+        title: news.title,
+        description: news.details,
+    };
+}
+
+const NewsDetailsPage = async({params}) => {
+    const { id } = await params;
+    // console.log (id, 'params');
+    const news = await getNewsDetailsById(id);
+    console.log(news, 'news details');
     return (
-        <div>
-            news details page
-        </div>
+         <div className="card bg-base-100  shadow-sm max-w-4xl mx-auto my-8">
+                   <div className="card-body">
+                       <div className='flex justify-between items-center bg-slate-200 p-2 rounded-md mb-4'>
+                           <div className='flex items-center gap-1'>
+                               <Image src={news.author?.img}
+                                   alt={news.author?.name || 'Author'}
+                                   width={40}
+                                   height={40}
+                                   className='rounded-full'>
+                               </Image>
+       
+                               <div>
+                                   <h2 className='font-semibold'>{news.author?.name}</h2>
+                                   <p className='text-xs'>{news.author?.published_date}</p>
+                               </div>
+       
+                           </div>
+                           <div className='flex justify-between items-center'>
+                               <CiShare2 className='text-xl' />
+                               <CiBookmark className='text-xl' />
+                           </div>
+                       </div>
+                       <h2 className="card-title">{news.title}</h2>
+                       <figure>
+                           <Image src={news.image_url} alt={news.title} width={300} height={300} className='w-full' />
+                       </figure>
+                       <p>{news.details}</p>
+                       <div className='flex justify-between items-center mt-4'>
+                           <div className='flex items-center gap-4'>
+                               <h2 className='flex items-center gap-2'> <IoStar className='text-yellow-500 text-lg' />{news.rating.number}</h2>
+                               <h2 className='flex items-center gap-2'><FaEye className='text-lg' />{news.total_view}</h2>
+       
+                           </div>
+                           <Link href={`/category/${news.category_id}`} className="btn bg-purple-500 text-white ">
+                               See other news in this category <BsArrowRight></BsArrowRight>
+                           </Link>
+                       </div>
+                   </div>
+       
+               </div>
     );
 };
 
