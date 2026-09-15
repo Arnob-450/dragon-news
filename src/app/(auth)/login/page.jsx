@@ -30,7 +30,7 @@ const LoginPage = () => {
             alert(error.message);
         }
         else {
-            alert(res.message);
+            alert("login Successful");
         }
 
     }
